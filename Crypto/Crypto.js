@@ -1,7 +1,7 @@
-const {hash, saltLength} = require('./Hash.js');
+const {hash} = require('./Hash.js');
 const {signMessage, verifySignature, getPublic} = require('./Sign.js');
 const {base32Encode, base32Decode} = require('./Encode.js');
-const {encrypt, decrypt, nonceLength} = require('./Encrypt.js');
+const {encrypt, decrypt} = require('./Encrypt.js');
 const randomBytes = require('./Random.js');
 
 class Crypto {
@@ -25,7 +25,7 @@ class Crypto {
     }
 
     /**
-     *
+     * returns a byte array of the decrypted data, or null if unsuccessful decryption
      * @param {String} encrypted
      * @param passwd
      * @return {Uint8Array | null}
@@ -71,6 +71,10 @@ class Crypto {
         return this.encode(getPublic(secret));
     }
 
+    /**
+     * returns a new randomly generated secret for private key use.
+     * @returns {Uint8Array}
+     */
     static newSecret() {
         return randomBytes(32);
     }
