@@ -14,7 +14,7 @@ class DAG {
 
     /**
      * A DAG that stores accounts and their respective transactions (Blocks)
-     * @param {"mongo"} storeType
+     * @param {Object} config - a file containing needed parameters to configure the DAG
      */
     constructor(config) {
         this.store = new this.#storageTypes[config.storeType](config);
@@ -74,9 +74,9 @@ class DAG {
             .withAmount(9007199254740991)
             .withSender("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             .withRecipient("L337GO3YT2KSGW7XXKWUXTK7PO6G2VCDC7SQB72SVGR53RMYPDOA")
-            .withHash("GPHLFDBWB3K5S234TSM6UYP7XQD7BQ5WVXR6LYVJ72SFE4A6TFEQ")
+            .withHash("D3UIJKD27BXODUB47AO6HCBDI2GQOGKN3PAHTA7EASEXCA4HPVJQ")
             .withPreviousHash("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-            .withSig("VIU3B7WHZ4BPVJYI7LOQWLB4GCZG5YVNH422FNUI3HNO342EK2C2VQN4W2Y42OSOPCOYSF6DMQIZY3PPAR7ROVSLB2EAC454ZSWACBY")
+            .withSig("AKXMGRJOFRCDL4COXHDPWSNODPC5LARSULTXZ4KDMTVOBDZEIR3ANZDP7AWN5A3NRLKI6VUBCBGYUJEGXUNA3JUH7KRIWZY5CMREQAI")
             .build();
     }
 
