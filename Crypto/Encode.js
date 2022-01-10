@@ -35,6 +35,8 @@ function hexEncode(bytes) {
  * @return {Uint8Array}
  */
 function hexDecode(s) {
+    if (s.length % 2 === 1)
+        s = '0' + s
     return rfc.base16.parse(s, parseOpts);
 }
 
