@@ -45,7 +45,7 @@ async function start(config) {
 }
 
 function home(req, res, next) {
-    res.status(200).send();
+    res.status(200).json({});
 }
 
 function log(req, res, next) {
