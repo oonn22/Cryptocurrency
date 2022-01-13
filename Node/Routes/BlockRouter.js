@@ -1,9 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 const router = express.Router();
 const Block = require('../../DAG/DataClasses/Block.js');
-const Crypto = require('../../Crypto/Crypto.js')
 
-router.post("/", newBlock);
+router.post("/", cors(), newBlock);
+router.options("/", cors());
 
 async function newBlock(req, res, next) {
     let DAG = req.app.locals.DAG;
@@ -14,17 +15,13 @@ async function newBlock(req, res, next) {
     let blockData = req.body;
     let block = Block(blockData);
 
-    res.set('Access-Control-Allow-Origin', '*'); //TODo is needed? does solve cors problems?
-
     try {
         block = block.build();
     } catch (err) {
-        console.log(err);
+        console.log("Bad Request: " + err.message);
         res.status(400).json({success: false, msg: 'Error processing block'});
-        next();
+        return;
     }
-
-    //TODO rest should only be executed if catch block doesnt execute, look into
 
     let lockRelease = await DAG.lockAccount(block.sender); //locks account to ensure no two blocks added to outChain at same position due to any race conditions
 
@@ -39,7 +36,7 @@ async function newBlock(req, res, next) {
 
         if (valid.valid) {
             //If block valid with no conflicts no point in performing  consensus, add to DAG and emit
-            res.status(200).json({msg: "Block added to pool."});
+            res.status(200).json({msg: "Block added."});
             await network.request.postData('/block', req.body);
             await DAG.addBlock(block);
         } else if (valid.code === validationLayer.blockConflictCode) {
@@ -58,8 +55,6 @@ async function newBlock(req, res, next) {
     } finally {
         lockRelease();
     }
-
-    next();
 }
 
 
