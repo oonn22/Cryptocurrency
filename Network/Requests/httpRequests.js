@@ -1,4 +1,4 @@
-const http = require('http')
+const http = require('http');
 const URL = require('url').URL;
 
 /**
@@ -12,7 +12,7 @@ async function getRequest(url, queries=undefined) {
     let options = {
         hostname: url.hostname,
         port: url.port,
-        path: url.path,
+        path: url.pathname,
         method: 'GET',
         query: queries
     }
@@ -35,7 +35,7 @@ async function postRequest(url, postData) {
     let options = {
         hostname: url.hostname,
         port: url.port,
-        path: url.path,
+        path: url.pathname,
         method: 'POST'
     }
 
@@ -67,7 +67,7 @@ async function httpRequest(options, postData=undefined) {
                 response.statusCode = res.statusCode;
 
                 try {
-                    body = JSON.parse(Buffer.concat(body).toString());
+                    response.body = JSON.parse(Buffer.concat(body).toString());
                 } catch (err) {
                     reject(err);
                 }
