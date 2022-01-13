@@ -16,7 +16,7 @@ class ConsensusLayer {
         let snowballID = block.previousHash;
 
         if (snowballID === "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-            snowballID = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + block.sender;
+            snowballID += block.sender;
 
         if (!this.snowballs[snowballID]) {
             this.snowballs.set(snowballID,  new Snowball(block, this.network));
