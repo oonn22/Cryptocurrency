@@ -1,3 +1,4 @@
+const Genesis = require('../DAG/DAG.js').getGenesis();
 
 //TODO needs optimization
 class Sync {
@@ -17,7 +18,7 @@ class Sync {
     }
 
     async #syncAccounts() {
-        let currAddress = this.DAG.getGenesis().recipient;
+        let currAddress = Genesis.recipient;
         let syncedAccounts = new Set();
         let toSync = new Queue();
 
@@ -44,7 +45,7 @@ class Sync {
             hash: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
         }
 
-        if (account !== null) {
+        if (account !== null && account.outChain.length > 0) {
             let startIndex = Math.max(0, account.outChain.length - 4);
             startBlock = account.outChain.at(startIndex);
         }
@@ -54,7 +55,7 @@ class Sync {
         //TODO maybe should validate block here, idk
         while (currBlock !== null) {
             await this.DAG.addBlock(currBlock);
-            let currBlock = await this.consensus.conformOnBlock(currBlock);
+            currBlock = await this.consensus.conformOnBlock(currBlock);
         }
 
         return await this.DAG.getAccount(address); //returns the updated account

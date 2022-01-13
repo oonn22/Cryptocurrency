@@ -48,11 +48,15 @@ class Requests {
     async getNodes(nodeURL) {
         let result = await this.getDataFromNode(nodeURL, '/nodes');
 
-        for (let i = 0; i < result.length; i++) {
-            let ping = await this.getDataFromNode(result[i], '/');
+        if (result === undefined)
+            console.log("Warning: unable to connect with network!");
+        else {
+            for (let i = 0; i < result.length; i++) {
+                let ping = await this.getDataFromNode(result[i], '/');
 
-            if (ping)
-                this.nodes.addNode(url); //TODO determine if this effects the node storage class
+                if (ping)
+                    this.nodes.addNode(url); //TODO determine if this effects the node storage class
+            }
         }
     }
 
