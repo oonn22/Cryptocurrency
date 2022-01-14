@@ -11,9 +11,13 @@ class Sync {
 
     async start(nodeURL) {
         if (nodeURL !== "") {
-            await this.network.request.getNodes(nodeURL);
+            await this.network.request.getNodesFromNode(nodeURL);
             await this.network.request.syncNodesWithNetwork();
-            await this.#syncAccounts();
+
+            if (this.network.getNetworkSize() === 0)
+                console.log("Warning: unable to sync with network as no nodes were found");
+            else
+                await this.#syncAccounts();
         }
     }
 
@@ -27,7 +31,7 @@ class Sync {
 
             syncedAccounts.add(currAddress);
 
-            account.forEach((block) => {
+            account.outChain.forEach((block) => {
                 if (!syncedAccounts.has(block.recipient))
                     toSync.enqueue(block.recipient);
             });
