@@ -50,7 +50,7 @@ async function postRequest(url, postData) {
 /**
  * Performs a http request using the default node module
  * @param options
- * @param postData
+ * @param {Object} postData
  * @return {Promise<any>}
  */
 async function httpRequest(options, postData=undefined) {
@@ -80,8 +80,10 @@ async function httpRequest(options, postData=undefined) {
             reject(err);
         });
 
-        if (postData)
-            req.write(postData);
+        if (postData) {
+            let jsonData = JSON.stringify(postData);
+            req.write(jsonData);
+        }
 
         req.end();
     });
