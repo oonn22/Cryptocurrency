@@ -42,7 +42,7 @@ class Snowball {
 
     /**
      * Comes to consensus with rest of network on which block should be accepted
-     * @returns {Promise<Block>}
+     * @returns {Promise<Block | null>}
      */
     async consensus() {
         if (this.#numParticipants > 0) {
@@ -71,7 +71,7 @@ class Snowball {
             }
         }
 
-        return Block(this.preference).build();
+        return this.preference !== null ? Block(this.preference).build() : null;
     }
 
     /**
