@@ -42,7 +42,8 @@ class NodeStorage {
      * @param {String} url
      */
     hasNode(url) {
-        return this.nodeLookup.get(this.#getAddress(url)) !== undefined;
+        let address = this.#getAddress(url);
+        return this.nodeLookup.get(address) !== undefined && address !== this.#selfAddress;
     }
 
     /**
