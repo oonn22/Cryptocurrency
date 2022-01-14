@@ -11,10 +11,10 @@ class NodeStorage {
 
     constructor(selfURL) {
         this.selfURL = selfURL;
-        this.#selfAddress = this.#getAddress(selfURL);
-        this.nodes = [];
-        this.nodeLookup = new Map();
-        this.#neighbours = [this.#selfAddress];
+        this.#selfAddress = this.#getAddress(selfURL); //hash of own url
+        this.nodes = []; //array of urls
+        this.nodeLookup = new Map(); //maps addresses to urls
+        this.#neighbours = [this.#selfAddress]; //sorted array of addresses
         this.#ownIndex = 0;
 
         this.nodeLookup.set(this.#selfAddress, this.selfURL);
@@ -38,16 +38,21 @@ class NodeStorage {
     }
 
     /**
-     * Adds a node to the known network, if not already known.
-     * @param {String} address base32 string
+     * Determines if the node is already stored
      * @param {String} url
-     * @param {String} sig base32
+     */
+    hasNode(url) {
+        return this.nodeLookup.get(this.#getAddress(url)) !== undefined;
+    }
+
+    /**
+     * Adds a node to the known network, if not already known.
+     * @param {String} url
      * @return {void}
      */
     addNode(url) {
-        let address = Crypto.encode(Crypto.hash(Buffer.from(url, 'ascii')));
-
-        if (this.nodeLookup.get(address) === undefined) {
+        if (!this.hasNode(url)) {
+            let address = this.#getAddress(url);
             this.nodes.push(url);
             this.nodeLookup.set(address, url);
             this.#addToNeighbours(address);
