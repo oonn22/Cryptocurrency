@@ -43,7 +43,7 @@ class NodeStorage {
      */
     hasNode(url) {
         let address = this.#getAddress(url);
-        return this.nodeLookup.get(address) !== undefined && address !== this.#selfAddress;
+        return this.nodeLookup.get(address) !== undefined || address === this.#selfAddress;
     }
 
     /**
