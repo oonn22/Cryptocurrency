@@ -23,7 +23,7 @@ class Network {
      * @returns {number}
      */
     getNetworkSize() {
-        return this.nodes.getNodes().length - 1;
+        return this.nodes.getNodes().length;
     }
 
     /**
