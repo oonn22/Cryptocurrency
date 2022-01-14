@@ -6,7 +6,6 @@ const NodeStorage = require('./NodeStorage.js');
  * An interface for storing info known about the network
  */
 class Network {
-    #url
 
     /**
      * An interface for storing info known about the network
@@ -15,7 +14,6 @@ class Network {
     constructor(selfURL) {
         this.nodes = new NodeStorage(selfURL);
         this.request = new Requests(this.nodes);
-        this.#url = selfURL
     }
 
     /**
@@ -31,7 +29,7 @@ class Network {
      * @returns {String}
      */
     getSelf() {
-        return this.#url;
+        return this.nodes.selfURL;
     }
 
 }
