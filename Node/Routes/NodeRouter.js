@@ -11,8 +11,8 @@ async function addNode(req, res, next) {
         let ping = await network.request.getDataFromNode(url, "/");
 
         if (ping) {
-            network.addNode(url);
-            await network.requests.postData("/nodes/node/add", {url: url});
+            network.nodes.addNode(url);
+            await network.request.postData("/nodes/node/add", {url: url});
             res.status(200).json({msg: "Added to network."});
         } else {
             res.status(422).json({msg: "Could not reach node."});
