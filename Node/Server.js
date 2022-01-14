@@ -26,7 +26,6 @@ async function start(config) {
     app.locals.Sync = new Sync(app.locals.DAG, app.locals.Network, app.locals.ConsensusLayer);
 
     await app.locals.Sync.start(Config.existingNodeURL);
-    await app.locals.Network.request.postData('/nodes/node/add', {url: Config.selfURL});
 
     app.use(log);
     app.use(express.json());
@@ -42,6 +41,9 @@ async function start(config) {
 
     app.listen(config.port);
     console.log('Listening at: ' + config.selfURL);
+
+    //after node is up and running, join network by posting own url to an active node
+    await app.locals.Network.request.postData('/nodes/node/add', {url: Config.selfURL});
 }
 
 function home(req, res, next) {
@@ -58,5 +60,5 @@ function log(req, res, next) {
 
 
 start(Config).then(result => {
-    console.log('STARTED');
+    console.log('ENDED SETUP, STARTED NODE');
 });
