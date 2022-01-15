@@ -1,4 +1,6 @@
 const Block = require('../DAG/DataClasses/Block.js');
+const ENCODED_256_ZERO_BITS = require('../Constants/Constants.js').ENCODED_256_ZERO_BITS;
+const NO_PREF_STRING = require('../Constants/Constants.js').NO_PREF_STRING;
 
 //For help understanding see https://docs.avax.network/learn/platform-overview/avalanche-consensus
 class Snowball {
@@ -24,7 +26,7 @@ class Snowball {
 
         this.#numParticipants = this.#network.getNetworkSize(); //n
 
-        if (preferredBlock.previousHash === "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        if (preferredBlock.previousHash === ENCODED_256_ZERO_BITS)
             this.#preferenceQuery = preferredBlock.previousHash + preferredBlock.sender;
         else
             this.#preferenceQuery = preferredBlock.previousHash
@@ -55,7 +57,7 @@ class Snowball {
                     {hash: this.#preferenceQuery},
                     this.#sampleSize,
                     (response) => {
-                        round.addVote(response.response, response.url);
+                        round.addVote(response.response);
                     });
 
                 if (round.winner === undefined)
@@ -71,7 +73,7 @@ class Snowball {
             }
         }
 
-        return this.preference !== null ? Block(this.preference).build() : null;
+        return this.preference !== NO_PREF_STRING ? Block(this.preference).build() : null;
     }
 
     /**
@@ -90,26 +92,24 @@ class Round {
     constructor(majority) {
         this.majority = majority;
         this.votes = {};
-        this.setWinner(undefined, undefined);
+        this.setWinner(undefined);
     }
 
     /**
      * adds a vote to a round.
-     * @param {Block | null | undefined} block - string represents a vote for a block, null means no preference, undefined means no response
-     * @param {String} url - the url vote came from
+     * @param {Block | NO_PREF_STRING | undefined} block - string represents a vote for a block, NO_PREF_STRING means no preference, undefined means no response
      */
-    addVote(block , url) {
+    addVote(block ) {
         if (block !== undefined) {
             (this.votes[block]) ? this.votes[block]++ : this.votes[block] = 1;
 
             if (this.votes[block] === this.majority)
-                this.setWinner(block, url);
+                this.setWinner(block);
         }
     }
 
-    setWinner(hash, url) {
+    setWinner(hash) {
         this.winner = hash;
-        this.winnerURL = url;
     }
 }
 

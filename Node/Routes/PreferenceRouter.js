@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const NO_PREF_STRING = require('../../Constants/Constants.js').NO_PREF_STRING;
 
 
 router.get('/', getPreference);
@@ -13,6 +14,10 @@ async function getPreference(req, res, next) {
 
     if (!pref) {
         pref = await DAG.getPreference(hash);
+    }
+
+    if (!pref) {
+        pref = NO_PREF_STRING;
     }
 
     //TODO Added line for testing, remove later
