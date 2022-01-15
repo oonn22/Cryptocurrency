@@ -1,14 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-const nodeRouter = require('./NodeRouter.js');
 
 router.get('/', getPreference);
 
 async function getPreference(req, res, next) {
     let ConsensusLayer = req.app.locals.ConsensusLayer;
     let DAG = req.app.locals.DAG;
-    let hash = req.body.hash;
+    let hash = req.query.hash;
 
     let pref = ConsensusLayer.getPreference(hash);
 
