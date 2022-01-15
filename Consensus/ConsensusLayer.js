@@ -1,4 +1,5 @@
 const Snowball = require('./Snowball.js');
+const ENCODED_256_ZERO_BITS = require('../Constants/Constants.js').ENCODED_256_ZERO_BITS;
 
 class ConsensusLayer {
     constructor(DAG, network) {
@@ -15,7 +16,7 @@ class ConsensusLayer {
     async conformOnBlock(block) {
         let snowballID = block.previousHash;
 
-        if (snowballID === "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        if (snowballID === ENCODED_256_ZERO_BITS)
             snowballID += block.sender;
 
         if (!this.snowballs[snowballID]) {

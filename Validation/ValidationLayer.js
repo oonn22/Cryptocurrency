@@ -1,4 +1,5 @@
 const Crypto = require('../Crypto/Crypto.js');
+const ENCODED_256_ZERO_BITS = require('../Constants/Constants.js').ENCODED_256_ZERO_BITS;
 
 /**
  * Uses info from DAG to validate new info
@@ -12,7 +13,7 @@ class ValidationLayer {
         3: "Block already accepted",
         4: "Conflicting Block",
         5: "Insufficient Balance",
-        6: "First out block must have previous hash: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        6: "First out block must have previous hash: " + ENCODED_256_ZERO_BITS,
         7: "Previous Hash is invalid",
     }
 
@@ -50,7 +51,7 @@ class ValidationLayer {
         if (account.determineBalance() < block.amount)
             return {valid: false, code: 5};
 
-        if (account.outChain.length === 0 && block.previousHash !== 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        if (account.outChain.length === 0 && block.previousHash !== ENCODED_256_ZERO_BITS)
             return {valid: false, code: 6};
 
         if (account.outChain.length !== 0 && account.outChain.at(-1).hash !== block.previousHash)

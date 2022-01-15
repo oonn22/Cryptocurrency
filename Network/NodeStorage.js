@@ -1,4 +1,5 @@
 const Crypto = require('../Crypto/Crypto.js');
+const MESSAGING_FAULT_TOLERANCE = require('../Constants/Constants.js').MESSAGING_FAULT_TOLERANCE;
 
 /**
  * An in-memory way to keep track of nodes in the network, and provides useful functionality regarding the nodes
@@ -7,7 +8,6 @@ class NodeStorage {
     #ownIndex;
     #neighbours;
     #selfAddress;
-    #messagePassingFaultTolerance = 8;
 
     constructor(selfURL) {
         this.selfURL = selfURL;
@@ -63,11 +63,11 @@ class NodeStorage {
     //TODO investigate this process. Adversary can choose their address is that okay? how many nodes do they need to control to control network (i.e split network in half)
     /**
      * Returns the neighbouring nodes from self in the network.
-     * @param {number} numNeighbours
      * @returns {String[]}
      */
-    getNeighbours(numNeighbours=this.#messagePassingFaultTolerance) {
+    getNeighbours() {
         //Neighbours are determined as the nodes whose addresses are alphabetically after self address
+        let numNeighbours = MESSAGING_FAULT_TOLERANCE;
         let index = this.#ownIndex + 1;
         let foundNeighbours = [];
 

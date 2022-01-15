@@ -1,0 +1,7 @@
+//Temp location until a more suitable place becomes available.
+
+const NO_PREF_STRING = "No Preference";
+const ENCODED_256_ZERO_BITS = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+const MESSAGING_FAULT_TOLERANCE = 8;
+
+module.exports = {NO_PREF_STRING, ENCODED_256_ZERO_BITS, MESSAGING_FAULT_TOLERANCE};

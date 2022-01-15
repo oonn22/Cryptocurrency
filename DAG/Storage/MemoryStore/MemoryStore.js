@@ -1,5 +1,6 @@
 const Store = require('../Store.js');
 const Account = require('../../DataClasses/Account.js');
+const ENCODED_256_ZERO_BITS = require('../../../Constants/Constants.js').ENCODED_256_ZERO_BITS;
 
 class MemoryStore extends Store {
     constructor(config) {
@@ -30,7 +31,7 @@ class MemoryStore extends Store {
         recipientAccount.addBlock(block);
 
         let prefHash =
-            block.previousHash === 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' ?
+            block.previousHash === ENCODED_256_ZERO_BITS ?
                 block.previousHash + block.sender : block.previousHash
 
         let existingPref = this.preferences.get(prefHash);

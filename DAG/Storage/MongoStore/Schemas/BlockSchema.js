@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Crypto = require('../../../../Crypto/Crypto.js');
 const Schema = mongoose.Schema;
+const ENCODED_256_ZERO_BITS = require('../../../../Constants/Constants.js').ENCODED_256_ZERO_BITS;
 
 
 const blockSchema = new Schema({
@@ -86,7 +87,7 @@ blockSchema.static('deleteBlocksStartingFrom', async function (hash) {
  */
 blockSchema.static('getPreference', async function (hash) {
     //TODO test this!!!
-    if (hash.length === 104 && hash.startsWith('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')) {
+    if (hash.length === 104 && hash.startsWith(ENCODED_256_ZERO_BITS)) {
         return await this.getAccountFirstOut(hash.slice(52));
     } else {
         return await this.findOne({'previousHash': hash}).exec();
@@ -94,7 +95,7 @@ blockSchema.static('getPreference', async function (hash) {
 });
 
 blockSchema.static('getAccountFirstOut', async function (address) {
-    return await this.findOne({previousHash: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', sender: address}).exec();
+    return await this.findOne({previousHash: ENCODED_256_ZERO_BITS, sender: address}).exec();
 })
 
 blockSchema.static('getBlocksWithSender',async function (sender) {

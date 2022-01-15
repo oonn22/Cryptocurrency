@@ -1,4 +1,5 @@
 const Genesis = require('../DAG/DAG.js').getGenesis();
+const ENCODED_256_ZERO_BITS = require('../Constants/Constants.js').ENCODED_256_ZERO_BITS;
 
 //TODO needs optimization
 class Sync {
@@ -45,8 +46,8 @@ class Sync {
         let account = await this.DAG.getAccount(address);
         let startBlock = {
             sender: address,
-            previousHash: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            hash: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            previousHash: ENCODED_256_ZERO_BITS,
+            hash: ENCODED_256_ZERO_BITS
         }
 
         if (account !== null && account.outChain.length > 0) {
