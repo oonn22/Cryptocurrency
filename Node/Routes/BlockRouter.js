@@ -28,8 +28,13 @@ async function newBlock(req, res, next) {
     try {
         let valid = await validationLayer.validateBlock(block);
 
+        if (valid.code === validationLayer.accountNotFoundCode) {
+            await sync.syncUnknownAccount(block.sender, false)
+            valid = await validationLayer.validateBlock(block);
+        }
+
         if (valid.code === validationLayer.blockOutOfSyncCode) {
-            await sync.syncAccount(block.sender);
+            await sync.syncAccount(block.sender, false);
             valid = await validationLayer.validateBlock(block);
         }
 
@@ -59,8 +64,8 @@ async function newBlock(req, res, next) {
             res.status(400).json({msg: "Invalid Block"});
         }
     } catch (err) {
-        console.log("error in new block");
-        console.log(err);
+        console.warn("ERROR: couldn't process new block");
+        console.error(err);
     } finally {
         lockRelease();
     }
