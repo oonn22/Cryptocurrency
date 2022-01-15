@@ -49,7 +49,7 @@ class Requests {
         let result = await this.getDataFromNode(nodeURL, '/nodes');
 
         if (result === undefined)
-            console.log("Warning: unable to get nodes from node " + nodeURL);
+            console.warn("Warning: unable to get nodes from node " + nodeURL);
         else {
             for (let i = 0; i < result.length; i++) {
                 let ping = await this.getDataFromNode(result[i], '/');
@@ -96,7 +96,7 @@ class Requests {
             let res = await httpRequests.getRequest(url + path, queryValues);
 
             if (res === undefined) {
-                console.log("Unreachable node while sampling: " + url);
+                console.warn("Unreachable node while sampling: " + url);
                 this.nodes.unreachable(url);
             } else {
                 let response = {response: res.body, url: url};
@@ -130,7 +130,7 @@ class Requests {
                 res = await httpRequests.postRequest(url + path, postData);
 
             if (res === undefined) {
-                console.log("Unreachable Node: " + url);
+                console.warn("Unreachable Node: " + url);
                 this.nodes.unreachable(url);
             } else {
                 res = res.body;
