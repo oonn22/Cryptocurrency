@@ -41,8 +41,14 @@ class Sync {
         }
     }
 
-    //TODO edit so can start from arbitrary index
-    async syncAccount(address) {
+    /**
+     * Syncs an account with the rest of the network.
+     * @param {String} address - account to sync.
+     * @param {boolean} lockAccount - determines whether to lock the account or not. Defaults o true, and should only
+     * be set false when account has been locked already inside the calling function.
+     * @return {Promise<Account>} - returns the synced account.
+     */
+    async syncAccount(address, lockAccount=true) {
         let account = await this.DAG.getAccount(address);
         let startBlock = {
             sender: address,
@@ -55,15 +61,64 @@ class Sync {
             startBlock = account.outChain.at(startIndex);
         }
 
-        let currBlock = await this.consensus.conformOnBlock(startBlock);
+        let lockRelease;
+        if (lockAccount)
+            lockRelease = await this.DAG.lockAccount(address);
 
-        //TODO maybe should validate block here, idk
-        while (currBlock !== null) {
-            await this.DAG.addBlock(currBlock);
-            currBlock = await this.consensus.conformOnBlock(currBlock);
+        try {
+            let currBlock = await this.consensus.conformOnBlock(startBlock);
+
+            //TODO maybe should validate block here, idk
+            while (currBlock !== null) {
+                await this.DAG.addBlock(currBlock);
+                currBlock = await this.consensus.conformOnBlock(currBlock);
+            }
+        } catch (err) {
+            console.warn("Error syncing account: " + address);
+            console.error(err);
+        } finally {
+            if (lockAccount)
+                lockRelease();
         }
 
         return await this.DAG.getAccount(address); //returns the updated account
+    }
+
+    /**
+     * Tries to sync an unknown account with rest of network.
+     * @param {String} address - account to sync.
+     * @param {boolean} lockAccount - determines whether to lock the account or not. Defaults o true, and should only
+     * be set false when account has been locked already inside the calling function.
+     * @return {Promise<Account>} - returns the synced account.
+     */
+    async syncUnknownAccount(address, lockAccount=true) {
+        let networkResponse = await this.network.request.sample('/accounts/account', {address: address}, 1);
+        let accountData = networkResponse[0].response;//BUG here
+        let accountsToSync = new Queue();
+        let syncedAccounts = new Set();
+
+        if (accountData !== undefined) {
+            let inChain = accountData.inChain;
+
+            if (inChain !== undefined && Array.isArray(inChain)) {
+                inChain.forEach(block => {
+                    accountsToSync.enqueue(block.sender);
+                });
+            }
+        }
+
+        let toSync = accountsToSync.dequeue();
+
+        while (toSync !== null) {
+            if (!syncedAccounts.has(toSync)) {
+                await this.syncAccount(toSync);
+                syncedAccounts.add(toSync);
+            }
+
+            toSync = accountsToSync.dequeue();
+        }
+
+        return await this.syncAccount(address, lockAccount);
     }
 }
 
