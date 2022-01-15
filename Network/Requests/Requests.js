@@ -82,10 +82,10 @@ class Requests {
      * @param {String} path - the path to query
      * @param {Object.<query, value>} queryValues - values to add to the query string in key value pairs
      * @param {Number} sampleSize - the number of nodes to sample from
-     * @param {onResponse} onResponse - executes for each response
+     * @param {onResponse | undefined} onResponse - executes for each response
      * @returns {Promise<{response: *, url: String}[]>} - undefined response value implies no response from url
      */
-    async sample(path, queryValues, sampleSize, onResponse) {
+    async sample(path, queryValues, sampleSize, onResponse=undefined) {
         let nodes = this.nodes.getNodes();
         let shuffled = nodes.sort(() => 0.5 - Math.random());
 
@@ -101,7 +101,9 @@ class Requests {
             } else {
                 let response = {response: res.body, url: url};
 
-                onResponse(response);
+                if (onResponse !== undefined)
+                    onResponse(response);
+
                 results.push(response);
             }
         }));
@@ -122,7 +124,7 @@ class Requests {
         let neighbours = this.nodes.getNeighbours();
 
         await Promise.all(neighbours.map( async url => {
-            let res = undefined;
+            let res;
 
             if (postData === undefined)
                 res = await httpRequests.getRequest(url + path, queryValues);
