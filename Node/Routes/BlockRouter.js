@@ -36,21 +36,25 @@ async function newBlock(req, res, next) {
 
         if (valid.valid) {
             //If block valid with no conflicts no point in performing consensus, add to DAG and emit
-            res.status(200).json({msg: "Block added."});
+            res.status(201).json({msg: "Block added."});
             await network.request.postData('/block', req.body);
             await DAG.addBlock(block);
+
         } else if (valid.code === validationLayer.blockConflictCode) {
             //Conflicting block in DAG perform consensus
             let finalBlock = await consensusLayer.conformOnBlock(block);
+
             if (finalBlock !== null) {
                 res.status(200).json({msg: "Conflicting block, block with hash: " + finalBlock.hash + " accepted."});
                 await network.request.postData('/block', req.body);
                 await DAG.addBlock(finalBlock);
             } else {
-                res.status(400).json({msg: "Error processing block."});
+                //consensus was performed, but the network has no preferrence
+                res.status(400).json({msg: "Error processing block."}); //Should stored conflicting block be deleted? look into this later, define what should be happening in this condition
             }
+
         } else if (valid.code === validationLayer.blockAlreadyExistsCode) {
-            res.status(409).json({msg: "Block already accepted!"});
+            res.status(200).json({msg: "Block already accepted!"});
         } else {
             res.status(400).json({msg: "Invalid Block"});
         }
