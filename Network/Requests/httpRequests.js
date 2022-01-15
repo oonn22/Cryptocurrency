@@ -1,5 +1,4 @@
-const http = require('http');
-const URL = require('url').URL;
+const axios = require('axios');
 
 /**
  * performs a get request to the desired url, catching any errors in the process
@@ -8,21 +7,11 @@ const URL = require('url').URL;
  * @return {Promise<{statusCode: number, body: any} | undefined>} - undefined implies error with response
  */
 async function getRequest(url, queries=undefined) {
-    if (queries)
-        url = new URL(url + '?' + new URLSearchParams(queries).toString());
-    else
-        url = new URL(url);
-
-    let options = {
-        hostname: url.hostname,
-        port: url.port,
-        path: url.pathname,
-        method: 'GET',
-    }
-
     try {
-        return await httpRequest(options);
+        let res = await axios.get(url, {params: queries});
+        return {statusCode: res.status, body: res.data};
     } catch (err) {
+        console.log(err);
         return undefined
     }
 }
@@ -34,65 +23,13 @@ async function getRequest(url, queries=undefined) {
  * @return {Promise<{statusCode: number, body: any} | undefined>} - undefined implies error with response
  */
 async function postRequest(url, postData) {
-    let json = JSON.stringify(postData);
-    url = new URL(url);
-    let options = {
-        hostname: url.hostname,
-        port: url.port,
-        path: url.pathname,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': json.length
-        }
-    }
-
     try {
-        return await httpRequest(options, json);
+        let res = await axios.post(url, postData);
+        return {statusCode: res.status, body: res.data};
     } catch (err) {
         console.log(err);
-        return undefined;
+        return undefined
     }
-}
-
-/**
- * Performs a http request using the default node module
- * @param options
- * @param {string} json - json data to post
- * @return {Promise<any>}
- */
-async function httpRequest(options, json=undefined) {
-    return new Promise((resolve, reject) => {
-        let req = http.request(options, res => {
-
-            let body = [];
-            res.on('data', chunk => {
-                body.push(chunk);
-            });
-
-            res.on('end', () => {
-                let response = {}
-                response.statusCode = res.statusCode;
-
-                try {
-                    response.body = JSON.parse(Buffer.concat(body).toString());
-                } catch (err) {
-                    reject(err);
-                }
-
-                resolve(response);
-            });
-        });
-
-        req.on('error', err => {
-            reject(err);
-        });
-
-        if (json)
-            req.write(json);
-
-        req.end();
-    });
 }
 
 
