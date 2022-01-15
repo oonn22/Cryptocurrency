@@ -8,13 +8,16 @@ const URL = require('url').URL;
  * @return {Promise<{statusCode: number, body: any} | undefined>} - undefined implies error with response
  */
 async function getRequest(url, queries=undefined) {
-    url = new URL(url);
+    if (queries)
+        url = new URL(url + '?' + new URLSearchParams(queries).toString());
+    else
+        url = new URL(url);
+
     let options = {
         hostname: url.hostname,
         port: url.port,
         path: url.pathname,
         method: 'GET',
-        query: queries
     }
 
     try {
