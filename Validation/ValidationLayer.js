@@ -17,6 +17,7 @@ class ValidationLayer {
         7: "Previous Hash is invalid",
     }
 
+    accountNotFoundCode = 2;
     blockAlreadyExistsCode = 3;
     blockConflictCode = 4;
     blockOutOfSyncCode = 7; //potentially out of sync
@@ -69,7 +70,7 @@ class ValidationLayer {
     #validateBlockFields(block) {
         if (block.sender === undefined || !this.#isString(block.sender) || !Crypto.canDecode(block.sender))
             return false;
-        if (block.recipient === undefined || !this.#isString(block.recipient) || !Crypto.canDecode(block.recipient))
+        if (block.recipient === undefined || !this.#isString(block.recipient) || !Crypto.canDecode(block.recipient) || block.recipient === block.sender)
             return false;
         if (block.hash === undefined || !this.#isString(block.hash) || !Crypto.canDecode(block.hash))
             return false;
