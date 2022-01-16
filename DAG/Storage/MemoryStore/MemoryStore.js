@@ -30,9 +30,9 @@ class MemoryStore extends Store {
         senderAccount.addBlock(block);
         recipientAccount.addBlock(block);
 
-        let prefHash =
-            block.previousHash === ENCODED_256_ZERO_BITS ?
-                block.previousHash + block.sender : block.previousHash
+        let prefHash = block.previousHash;
+        if (block.previousHash === ENCODED_256_ZERO_BITS)
+            prefHash += block.sender
 
         let existingPref = this.preferences.get(prefHash);
         while (existingPref !== undefined) {
@@ -53,7 +53,7 @@ class MemoryStore extends Store {
 
     async getPreference(hash) {
         let pref = this.preferences.get(hash);
-        return (pref) ? this.blocks.get(pref) : null; //returns pref block if found or null
+        return (pref) ? pref : null; //returns pref block if found or null
     }
 
     async getAccount(address) {
