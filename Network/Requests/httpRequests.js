@@ -10,6 +10,7 @@ async function getRequest(url, queries=undefined) {
     try {
         let res = await axios.get(url, {params: queries});
         console.log('MADE GET REQUEST TO: ' + url);
+        console.log('WITH QUERIES: ' + JSON.stringify(queries));
         console.log('GET REQUEST RESPONSE BODY: ' + JSON.stringify(res.data));
         return {statusCode: res.status, body: res.data};
     } catch (err) {
@@ -28,6 +29,7 @@ async function postRequest(url, postData) {
     try {
         let res = await axios.post(url, postData);
         console.log('MADE POST REQUEST TO: ' + url);
+        console.log('WITH BODY: ' + JSON.stringify(postData));
         console.log('POST REQUEST RESPONSE BODY: ' + JSON.stringify(res.data));
         return {statusCode: res.status, body: res.data};
     } catch (err) {
