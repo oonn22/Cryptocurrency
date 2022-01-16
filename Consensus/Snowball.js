@@ -63,7 +63,7 @@ class Snowball {
                 if (round.winner === undefined)
                     consecutiveSuccess = 0;
                 else {
-                    if (round.winner === this.preference)
+                    if (this.#compareWinnerToPref(round.winner))
                         consecutiveSuccess++;
                     else {
                         this.preference = round.winner;
@@ -75,6 +75,24 @@ class Snowball {
 
         return this.preference !== NO_PREF_STRING ? Block(this.preference).build() : null;
     }
+
+    /**
+     * returns true if winner and this.preference are the same
+     * @param {Block | NO_PREF_STRING} winner
+     * @return {boolean}
+     */
+    #compareWinnerToPref(winner) {
+        if (this.preference === NO_PREF_STRING) {
+            return winner === NO_PREF_STRING;
+        } else {
+            if (winner === NO_PREF_STRING)
+                return false;
+            else
+                return this.preference.hash === winner.hash;
+        }
+    }
+
+
 
     /**
      * Returns the current preference of this snowball

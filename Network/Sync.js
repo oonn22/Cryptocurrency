@@ -71,7 +71,8 @@ class Sync {
             //TODO maybe should validate block here, idk
             while (currBlock !== null) {
                 await this.DAG.addBlock(currBlock);
-                currBlock = await this.consensus.conformOnBlock(currBlock);
+                let syncBlock = {sender: address, previousHash: currBlock.hash, hash: ENCODED_256_ZERO_BITS};
+                currBlock = await this.consensus.conformOnBlock(syncBlock);
             }
         } catch (err) {
             console.warn("Error syncing account: " + address);
@@ -93,7 +94,7 @@ class Sync {
      */
     async syncUnknownAccount(address, lockAccount=true) {
         let networkResponse = await this.network.request.sample('/accounts/account', {address: address}, 1);
-        let accountData = networkResponse[0].response;//BUG here
+        let accountData = networkResponse[0].response;
         let accountsToSync = new Queue();
         let syncedAccounts = new Set();
 
