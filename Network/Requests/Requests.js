@@ -52,10 +52,12 @@ class Requests {
             console.warn("Warning: unable to get nodes from node " + nodeURL);
         else {
             for (let i = 0; i < result.length; i++) {
-                let ping = await this.getDataFromNode(result[i], '/');
+                if (!this.nodes.hasNode(result[i])) {
+                    let ping = await this.getDataFromNode(result[i], '/');
 
-                if (ping)
-                    this.nodes.addNode(result[i]); //TODO determine if this effects the node storage class
+                    if (ping)
+                        this.nodes.addNode(result[i]);
+                }
             }
         }
     }
