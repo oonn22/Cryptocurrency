@@ -65,7 +65,7 @@ async function processBlock(req, res, block) {
     let consensusLayer = req.app.locals.ConsensusLayer;
     let sync = req.app.locals.Sync;
 
-    let valid = validationLayer.validateBlock(block);
+    let valid = await validationLayer.validateBlock(block);
 
     if (valid.code === validationLayer.accountNotFoundCode) {
         await sync.syncUnknownAccount(block.sender, false)
