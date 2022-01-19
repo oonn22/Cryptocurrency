@@ -84,7 +84,7 @@ async function processBlock(req, res, block) {
 
     } else if (valid.code === validationLayer.blockConflictCode) {
         //Conflicting block in DAG perform consensus
-        let block = await consensusLayer.conformOnBlock(block);
+        block = await consensusLayer.conformOnBlock(block);
 
         if (block !== null) {
             res.status(200).json({msg: "Conflicting block, block with hash: " + block.hash + " accepted."});
