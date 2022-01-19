@@ -78,7 +78,8 @@ class MongoStore extends Store{
         let inBlocks = await BlockModel.getBlocksWithRecipient(address);
         let curr = await BlockModel.getAccountFirstOut(address);
 
-        curr = curr.toObject();
+        if (curr !== null)
+            curr = curr.toObject();
 
         inBlocks.forEach((block) => {
             inChain.push(Block(block.toObject()).build());
