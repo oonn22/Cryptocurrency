@@ -86,9 +86,10 @@ blockSchema.static('deleteBlocksStartingFrom', async function (hash) {
  * returns the block saved that has previous hash value equal to hash, or null if no preference
  */
 blockSchema.static('getPreference', async function (hash) {
-    //TODO test this!!!
     if (hash.length === 104 && hash.startsWith(ENCODED_256_ZERO_BITS)) {
         return await this.getAccountFirstOut(hash.slice(52));
+    } else if (hash === ENCODED_256_ZERO_BITS) {
+        return null;
     } else {
         return await this.findOne({'previousHash': hash}).exec();
     }
