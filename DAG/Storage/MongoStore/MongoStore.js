@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const BlockModel = require('./Schemas/BlockSchema.js');
 const Block = require('../../DataClasses/Block.js');
 const Account = require('../../DataClasses/Account.js');
+const ENCODED_256_ZERO_BITS = require('../../../Constants/Constants.js').ENCODED_256_ZERO_BITS;
 
 //TODO rewrite this class, make optimizations
 class MongoStore extends Store{
@@ -18,7 +19,13 @@ class MongoStore extends Store{
         if (await this.getBlock(block.hash) === null) { //check if block already exists
 
             //if there is another preferred block, we must replace it with the new block
-            let preferredBlock = await BlockModel.getPreference(block.previousHash)
+            let prefString;
+            if (block.previousHash === ENCODED_256_ZERO_BITS)
+                prefString = block.previousHash + block.sender;
+            else
+                prefString = block.previousHash;
+
+            let preferredBlock = await BlockModel.getPreference(prefString);
             if (preferredBlock) {
                 await BlockModel.deleteBlocksStartingFrom(preferredBlock);
             }
@@ -71,6 +78,8 @@ class MongoStore extends Store{
         let inBlocks = await BlockModel.getBlocksWithRecipient(address);
         let curr = await BlockModel.getAccountFirstOut(address);
 
+        curr = curr.toObject();
+
         inBlocks.forEach((block) => {
             inChain.push(Block(block.toObject()).build());
         });
@@ -78,8 +87,8 @@ class MongoStore extends Store{
         while (curr !== null) {
             let pref = await this.getPreference(curr.hash);
 
-            outChain.push(Block(curr.toObject()).build());
-            pref ? curr = await this.getBlock(pref) : curr = null;
+            outChain.push(Block(curr).build());
+            pref ? curr = await this.getBlock(pref.hash) : curr = null;
         }
 
         return new Account(address, inChain, outChain);
