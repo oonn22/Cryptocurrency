@@ -49,7 +49,7 @@ async function start(config) {
         https.createServer(credentials, app).listen(config.httpsPort);
     }
 
-    http.createServer(app).listen(port);
+    http.createServer(app).listen(config.port);
 
     console.log('Listening at port: ' + config.port);
 
