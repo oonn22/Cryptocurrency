@@ -1,3 +1,6 @@
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
 const express = require('express');
 const DAG = require('../DAG/DAG.js');
 const Network = require('../Network/Network.js');
@@ -14,10 +17,9 @@ const nodesRouter = require('./Routes/NodesRouter.js');
 const preferenceRouter = require('./Routes/PreferenceRouter.js');
 // ***************
 
-//TODO https://www.geeksforgeeks.org/how-to-run-many-parallel-http-requests-using-node-js/
 
 async function start(config) {
-    const app = express();
+    let app = express();
 
     app.locals.DAG = await DAG.configDag(config);
     app.locals.Network = new Network(config.selfURL);
@@ -39,8 +41,17 @@ async function start(config) {
 
     app.get('/', home);
 
-    app.listen(config.port);
-    console.log('Listening at: ' + config.selfURL);
+    if (config.https) {
+        let credentials = {
+            key: fs.readFileSync(config.httpsPrivateKeyPath, 'utf8'),
+            cert: fs.readFileSync(config.httpsCertificatePath, 'utf8')
+        }
+        https.createServer(credentials, app).listen(config.httpsPort);
+    }
+
+    http.createServer(app).listen(port);
+
+    console.log('Listening at port: ' + config.port);
 
     //after node is up and running, join network by posting own url to an active node
     await app.locals.Network.request.postData('/nodes/node/add', {url: Config.selfURL});
@@ -51,7 +62,7 @@ function home(req, res, next) {
 }
 
 function log(req, res, next) {
-    //TODO set up a more robust logging middleware in the future
+    //set up a more robust logging middleware in the future
     console.log('Incoming Request: ');
     console.log('Method: ' + req.method);
     console.log('URL: ' + req.url);
@@ -61,4 +72,7 @@ function log(req, res, next) {
 
 start(Config).then(result => {
     console.log('ENDED SETUP, STARTED NODE');
+}).catch((err) => {
+    console.error('COULDN\'T SET UP NODE.');
+    console.error(err);
 });

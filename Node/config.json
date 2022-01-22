@@ -1,7 +1,11 @@
 {
   "existingNodeURL": "",
   "selfURL": "",
-  "port": "",
+  "port": 1,
+  "httpsPort": 2,
   "storeType": "",
-  "mongoURL": ""
+  "mongoURL": "",
+  "https": false,
+  "httpsPrivateKeyPath": "",
+  "httpsCertificatePath": ""
 }
